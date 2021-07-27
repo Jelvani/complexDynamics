@@ -10,11 +10,11 @@
 
 //M: width, N: height
 
-#define xMin -1.5
-#define xMax 1.5
-#define yMin -1.5
-#define yMax 1.5
-#define ITER 200
+#define xMin -1.3
+#define xMax 1.3
+#define yMin -1.3
+#define yMax 1.3
+#define ITER 150
 #define M 5000
 #define PIX_RANGE 255
 #define N int((double(yMax-yMin)/(xMax-xMin))*M)
@@ -59,7 +59,7 @@ int main() {
     //pow(0.65-0.4198i,1),  pow(z,4);
 
 
-    complex<double> c = pow(0.27+0i,1);
+    complex<double> c = pow(0.3755-0.3i,1);
 
         #pragma omp parallel for
         for(int i = 0; i < N; i++){ 
@@ -68,18 +68,23 @@ int main() {
                 map(j,i,&x,&y);
                 
 
-                set[i][j][0] = 0;
-                set[i][j][1] = 0;
+                set[i][j][0] = 255;
+                set[i][j][1] = 100;
                 set[i][j][2] = 0;
 
                 complex<double> z(x,y);
                 for(int it = 0; it < ITER; it++){
                     z = pow(z,2) + c;
-
+                    if(real(z*conj(z))>(xMin*xMin) && it < 10){
+                        set[i][j][0] = 255;
+                        set[i][j][1] = 255;
+                        set[i][j][2] = 255;
+                        break;
+                    }
                     if(real(z*conj(z))>(xMin*xMin)){
-                        set[i][j][0] = int((double(it)/ITER)*PIX_RANGE/4)*5;
-                        set[i][j][1] = 0;
-                        set[i][j][2] = int((double(it)/ITER)*PIX_RANGE)*4;;
+                        set[i][j][0] = int((double(it)/ITER)*PIX_RANGE);
+                        set[i][j][1] = sin(int((double(it)/ITER)*PIX_RANGE/4))*PIX_RANGE/2;
+                        set[i][j][2] = tan(int((double(it)/ITER)*PIX_RANGE)*4)*PIX_RANGE/1.2;
                         break;
                     }
 
