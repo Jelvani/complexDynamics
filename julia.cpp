@@ -14,8 +14,8 @@
 #define xMax 1.3
 #define yMin -1.3
 #define yMax 1.3
-#define ITER 150
-#define M 5000
+#define ITER 200
+#define M 4000
 #define PIX_RANGE 255
 #define N int((double(yMax-yMin)/(xMax-xMin))*M)
 
@@ -57,9 +57,9 @@ int main() {
 
 
     //pow(0.65-0.4198i,1),  pow(z,4);
+    //pow(0.3755-0.3i,1)
 
-
-    complex<double> c = pow(0.3755-0.3i,1);
+    complex<double> c = pow(-0.071-0.665i,0.999);
 
         #pragma omp parallel for
         for(int i = 0; i < N; i++){ 
@@ -75,16 +75,19 @@ int main() {
                 complex<double> z(x,y);
                 for(int it = 0; it < ITER; it++){
                     z = pow(z,2) + c;
-                    if(real(z*conj(z))>(xMin*xMin) && it < 10){
-                        set[i][j][0] = 255;
-                        set[i][j][1] = 255;
-                        set[i][j][2] = 255;
+
+                    //if escaped to infinity very quickly, we set the pixel to a fixed color
+                    if(real(z*conj(z))>(xMin*xMin) && it < 6){
+                        set[i][j][0] = 0;
+                        set[i][j][1] = 0;
+                        set[i][j][2] = 0;
                         break;
                     }
+                    //otherwise, we color it accoridng to iteration count
                     if(real(z*conj(z))>(xMin*xMin)){
-                        set[i][j][0] = int((double(it)/ITER)*PIX_RANGE);
-                        set[i][j][1] = sin(int((double(it)/ITER)*PIX_RANGE/4))*PIX_RANGE/2;
-                        set[i][j][2] = tan(int((double(it)/ITER)*PIX_RANGE)*4)*PIX_RANGE/1.2;
+                        set[i][j][0] = 200;
+                        set[i][j][1] = 0;
+                        set[i][j][2] = sin(int((double(it)/ITER)*PIX_RANGE/4))*PIX_RANGE/30;
                         break;
                     }
 
